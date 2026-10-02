@@ -78,39 +78,22 @@
         .intro-content {
             animation: introFadeIn 0.6s ease-out;
         }
-
-        /* ==== Loading Overlay ==== */
-        #loading-overlay {
-            animation: loadingFadeIn 0.25s ease-out;
-        }
-        @keyframes loadingFadeIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-        @keyframes spinSlow {
-            to { transform: rotate(360deg); }
-        }
-        .loading-spinner {
-            width: 56px;
-            height: 56px;
-            border: 4px solid #e5dcda;
-            border-top-color: #2b2523;
-            border-radius: 50%;
-            animation: spinSlow 0.9s linear infinite;
-        }
     </style>
 </head>
 <body class="bg-brand-50 text-brand-900 h-full flex flex-col antialiased">
 
     <!-- ============ INTRO OVERLAY ============ -->
     <div id="intro-overlay" class="fixed inset-0 z-[100] flex items-center justify-center">
+        <!-- Blur backdrop yang menutupi seluruh halaman -->
         <div class="absolute inset-0 bg-brand-50/70 backdrop-blur-2xl"></div>
 
         <div class="intro-content relative z-10 flex flex-col items-center gap-4 sm:gap-6 px-6 text-center">
             <div class="relative">
+                <!-- Ring pulsing lembut di belakang tombol -->
                 <span class="absolute -inset-3 rounded-full bg-brand-900/10 animate-soft-ping"></span>
                 <span class="absolute -inset-6 rounded-full bg-brand-900/5 animate-soft-ping-slow"></span>
 
+                <!-- Tombol bulat utama -->
                 <button id="intro-btn"
                         onclick="startExperience()"
                         aria-label="Mulai PotretHouse"
@@ -123,19 +106,6 @@
             <div class="space-y-1.5 mt-3 sm:mt-5">
                 <p class="font-serif text-base sm:text-xl text-brand-900 font-semibold">Selamat Datang</p>
                 <p class="text-[11px] sm:text-xs text-gray-500">Ketuk tombol di atas untuk mulai booking</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ LOADING OVERLAY (muncul saat submit) ============ -->
-    <div id="loading-overlay" class="fixed inset-0 z-[110] hidden items-center justify-center">
-        <div class="absolute inset-0 bg-brand-50/85 backdrop-blur-2xl"></div>
-        <div class="relative z-10 flex flex-col items-center gap-5 px-6 text-center">
-            <div class="w-14 h-14 rounded-full bg-brand-900 flex items-center justify-center text-white font-serif text-2xl shadow-lg">P</div>
-            <div class="loading-spinner"></div>
-            <div class="space-y-1">
-                <p class="font-serif text-lg sm:text-xl font-bold text-brand-900">Menyiapkan WhatsApp…</p>
-                <p class="text-[11px] sm:text-xs text-gray-500">Mohon tunggu sebentar, jangan tutup halaman ini</p>
             </div>
         </div>
     </div>
@@ -394,7 +364,7 @@
         let experienceStarted = false;
 
         /* ============================================================
-           INTRO OVERLAY — Fungsi tombol bulat
+           INTRO OVERLAY — Fungsi yang dijalankan saat tombol bulat ditekan
            ============================================================ */
         function startExperience() {
             if (experienceStarted) return;
@@ -403,32 +373,23 @@
             const overlay = document.getElementById('intro-overlay');
             const btn = document.getElementById('intro-btn');
 
+            // Efek tekan tombol dulu
             if (btn) btn.classList.add('scale-90');
             setTimeout(() => { if (btn) btn.classList.remove('scale-90'); }, 150);
 
+            // Fade out overlay
             overlay.classList.add('intro-hidden');
 
+            // Setelah transisi selesai, hapus overlay dari DOM
             setTimeout(() => {
                 overlay.style.display = 'none';
             }, 750);
 
+            // Sinyal ke browser bahwa user gesture sudah terjadi → popup WA nanti
+            // otomatis diizinkan pada banyak browser.
+            // Warm-up: kita tidak buka popup sekarang agar tidak mengganggu,
+            // tapi flag di bawah bisa dipakai untuk permission lain di masa depan.
             sessionStorage.setItem('ph_experience_started', '1');
-        }
-
-        /* ============================================================
-           LOADING OVERLAY — Tampil di halaman ini (bukan tab baru)
-           Ukuran otomatis benar karena pakai viewport halaman utama.
-           ============================================================ */
-        function showLoadingOverlay() {
-            const el = document.getElementById('loading-overlay');
-            el.classList.remove('hidden');
-            el.classList.add('flex');
-        }
-
-        function hideLoadingOverlay() {
-            const el = document.getElementById('loading-overlay');
-            el.classList.add('hidden');
-            el.classList.remove('flex');
         }
 
         /* ---------------- API Helper ---------------- */
@@ -597,12 +558,82 @@
         }
 
         /* ============================================================
-           Redirect ke WhatsApp dari halaman ini (bukan popup)
-           → Konteks mobile tetap terjaga → WhatsApp app kebuka dengan benar
+           PRE-OPEN WINDOW (Anti Popup Blocker)
+           Membuka tab baru SINKRON dalam user gesture,
+           lalu mengisinya dengan halaman loading yang rapi.
            ============================================================ */
-        function navigateToWhatsApp_(message) {
+        function openLoadingWindow_() {
+            const w = window.open('about:blank', '_blank');
+            if (!w) return null;
+            try {
+                w.document.write(`<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menyiapkan WhatsApp…</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        margin: 0; min-height: 100vh;
+        display: flex; align-items: center; justify-content: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        background: #fcfbfa; color: #2b2523;
+        padding: 24px; text-align: center;
+    }
+    .box { max-width: 340px; }
+    .spinner {
+        width: 56px; height: 56px;
+        border: 4px solid #e5dcda;
+        border-top-color: #2b2523;
+        border-radius: 50%;
+        margin: 0 auto 22px;
+        animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 44px; height: 44px; border-radius: 50%;
+        background: #2b2523; color: #fff;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 20px; margin-bottom: 16px;
+    }
+    h1 { font-size: 17px; font-weight: 700; margin: 0 0 8px; letter-spacing: -0.01em; }
+    p { font-size: 13px; color: #6b625e; margin: 0; line-height: 1.55; }
+    .note { margin-top: 22px; font-size: 11px; color: #a09793; }
+</style>
+</head>
+<body>
+    <div class="box">
+        <div class="badge">P</div>
+        <div class="spinner"></div>
+        <h1>Menyiapkan WhatsApp…</h1>
+        <p>Pesanan Anda sedang kami proses.<br>Mohon jangan tutup halaman ini.</p>
+        <div class="note">PotretHouse Studio</div>
+    </div>
+</body>
+</html>`);
+                w.document.close();
+            } catch (e) {
+                // about:blank seharusnya aman, tapi kalau error, abaikan saja.
+            }
+            return w;
+        }
+
+        function navigateToWhatsApp_(waWindow, message) {
             const url = `https://wa.me/${STUDIO_WA_NUMBER}?text=${encodeURIComponent(message)}`;
-            window.location.href = url;
+            if (waWindow && !waWindow.closed) {
+                waWindow.location.href = url;
+            } else {
+                // Fallback: buka di tab yang sama
+                window.location.href = url;
+            }
+        }
+
+        function closeLoadingWindow_(waWindow) {
+            if (waWindow && !waWindow.closed) {
+                try { waWindow.close(); } catch (e) {}
+            }
         }
 
         /* ---------------- Submit Booking → Sheets + WhatsApp ---------------- */
@@ -626,7 +657,7 @@
                 : 0;
             const isKomersil = document.querySelector('input[name="tipeSesi"]:checked').value === 'komersil' ? 'kom' : 'non';
 
-            // Validasi cepat (sinkron)
+            // Validasi cepat (sinkron) — kalau gagal, tidak perlu buka window
             if (!jamSelesai) {
                 showToast('Jam selesai tidak terhitung. Pastikan durasi & jam mulai sudah dipilih.');
                 isSubmitting = false;
@@ -657,42 +688,45 @@
 
             const waMessage = buildWhatsAppMessage_(dataToSave);
 
-            // Tampilkan loading overlay di halaman ini (ukuran otomatis benar)
-            showLoadingOverlay();
+            // ✅ Buka tab loading SEKARANG (sinkron, masih dalam user gesture) — popup blocker lolos
+            const waWindow = openLoadingWindow_();
 
             try {
                 const result = await apiPost({ action: 'create', data: dataToSave });
 
                 if (result.status === 'success') {
-                    // Data tersimpan → langsung redirect ke WhatsApp
-                    navigateToWhatsApp_(waMessage);
+                    showToast('Booking tersimpan! Membuka WhatsApp...');
+
+                    // Reset form
+                    e.target.reset();
+                    addOnsCount.extraPerson = 0;
+                    addOnsCount.extraEdit = 0;
+                    document.getElementById('val-extraPerson').innerText = '0';
+                    document.getElementById('val-extraEdit').innerText = '0';
+                    document.getElementById('booking-tgl').value = new Date().toISOString().split('T')[0];
+                    togglePaymentField();
+                    calculatePrice();
+
+                    // Delay singkat supaya toast sempat terlihat
+                    setTimeout(() => navigateToWhatsApp_(waWindow, waMessage), 500);
                 } else {
-                    // Gagal simpan → tanya user apakah tetap mau kirim WA
-                    hideLoadingOverlay();
+                    closeLoadingWindow_(waWindow);
                     showToast('Gagal simpan ke sistem: ' + (result.message || 'kesalahan'));
-                    setTimeout(() => {
-                        if (confirm('Data gagal tersimpan ke sistem. Tetap kirim pesanan via WhatsApp?')) {
-                            navigateToWhatsApp_(waMessage);
-                        } else {
-                            isSubmitting = false;
-                            btn.disabled = false;
-                            btn.innerHTML = originalBtnHTML;
-                        }
-                    }, 400);
+                    if (confirm('Data gagal tersimpan ke sistem. Tetap kirim pesanan via WhatsApp?')) {
+                        navigateToWhatsApp_(null, waMessage);
+                    }
                 }
             } catch (err) {
                 console.error(err);
-                hideLoadingOverlay();
+                closeLoadingWindow_(waWindow);
                 showToast('Gagal terhubung ke server.');
-                setTimeout(() => {
-                    if (confirm('Koneksi bermasalah. Tetap kirim pesanan via WhatsApp?')) {
-                        navigateToWhatsApp_(waMessage);
-                    } else {
-                        isSubmitting = false;
-                        btn.disabled = false;
-                        btn.innerHTML = originalBtnHTML;
-                    }
-                }, 400);
+                if (confirm('Koneksi bermasalah. Tetap kirim pesanan via WhatsApp?')) {
+                    navigateToWhatsApp_(null, waMessage);
+                }
+            } finally {
+                isSubmitting = false;
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHTML;
             }
         }
 
