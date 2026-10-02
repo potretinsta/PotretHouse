@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#2b2523">
+    <title>PotretHouse — Dashboard Keuangan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fcfbfa', 100: '#f4f0ec', 200: '#e5dcda',
+                            300: '#d1c3be', 800: '#4a423e', 900: '#2b2523',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .tab-content { transition: all 0.3s ease-in-out; }
+        input[type="date"], input[type="time"] {
+            -webkit-appearance: none; appearance: none; min-height: 42px;
+        }
+        input[type="date"]::-webkit-date-and-time-value,
+        input[type="time"]::-webkit-date-and-time-value { text-align: left; }
+        .scroll-x { -webkit-overflow-scrolling: touch; }
+        .scroll-x::-webkit-scrollbar { height: 6px; }
+        .scroll-x::-webkit-scrollbar-thumb { background: #d1c3be; border-radius: 9999px; }
+    </style>
+</head>
+<body class="bg-brand-50 text-brand-900 h-full flex flex-col antialiased">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-brand-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
+            <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-900 flex items-center justify-center text-white font-serif text-lg sm:text-xl tracking-wider shrink-0">P</div>
+                <div class="min-w-0">
+                    <h1 class="font-serif text-lg sm:text-2xl font-bold tracking-tight text-brand-900 truncate">PotretHouse</h1>
+                    <p class="text-[10px] sm:text-xs text-gray-500 uppercase tracking-widest truncate">Admin & Financial Hub</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+                <button onclick="loadTransactions()" title="Muat Ulang Data" class="w-9 h-9 rounded-full bg-brand-100 text-brand-900 border border-brand-200 hover:bg-brand-200 transition flex items-center justify-center">
+                    <i class="fa-solid fa-rotate text-xs"></i>
+                </button>
+                <a href="index.html" class="w-9 h-9 rounded-full border border-brand-200 text-gray-400 hover:text-brand-900 hover:border-brand-900 flex items-center justify-center transition" title="Halaman Booking">
+                    <i class="fa-solid fa-camera-retro text-xs"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+
+        <div id="tab-admin" class="tab-content space-y-6 sm:space-y-8">
+            <!-- Header & Filter Stats -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                <div class="min-w-0">
+                    <h2 class="font-serif text-xl sm:text-3xl font-bold text-brand-900 leading-tight">Dashboard Keuangan PotretHouse</h2>
+                    <p class="text-gray-500 text-xs sm:text-sm mt-1">Kelola transaksi booking, status pelunasan, dan rekap bulanan secara otomatis.</p>
+                </div>
+                <button onclick="openAddTransactionModal()" class="bg-brand-900 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 transition shadow-sm flex items-center justify-center space-x-2 w-full sm:w-auto">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Tambah Transaksi Manual</span>
+                </button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="bg-white rounded-2xl p-4 sm:p-6 border border-brand-200 shadow-sm">
+                    <div class="text-[10px] sm:text-xs uppercase tracking-wider text-gray-500 font-semibold leading-tight">Pendapatan Bulan Ini</div>
+                    <div id="stat-total-pendapatan" class="text-base sm:text-2xl font-bold text-brand-900 mt-2 font-serif break-words">Rp 0</div>
+                    <div class="text-[10px] sm:text-xs text-emerald-600 mt-2 hidden sm:flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i><span>Real-time</span></div>
+                </div>
+                <div class="bg-white rounded-2xl p-4 sm:p-6 border border-brand-200 shadow-sm">
+                    <div class="text-[10px] sm:text-xs uppercase tracking-wider text-gray-500 font-semibold leading-tight">Total Klien Booking</div>
+                    <div id="stat-total-klien" class="text-base sm:text-2xl font-bold text-brand-900 mt-2 font-serif">0 Klien</div>
+                    <div class="text-[10px] sm:text-xs text-gray-500 mt-2 hidden sm:block">Online & offline</div>
+                </div>
+                <div class="bg-white rounded-2xl p-4 sm:p-6 border border-brand-200 shadow-sm">
+                    <div class="text-[10px] sm:text-xs uppercase tracking-wider text-gray-500 font-semibold leading-tight">Sisa Piutang</div>
+                    <div id="stat-total-piutang" class="text-base sm:text-2xl font-bold text-amber-600 mt-2 font-serif break-words">Rp 0</div>
+                    <div class="text-[10px] sm:text-xs text-amber-600 mt-2 hidden sm:block">Belum lunas</div>
+                </div>
+                <div class="bg-white rounded-2xl p-4 sm:p-6 border border-brand-200 shadow-sm">
+                    <div class="text-[10px] sm:text-xs uppercase tracking-wider text-gray-500 font-semibold leading-tight">Komersil vs Non</div>
+                    <div id="stat-perbandingan-komersil" class="text-base sm:text-2xl font-bold text-brand-900 mt-2 font-serif">0 / 0</div>
+                    <div class="text-[10px] sm:text-xs text-gray-500 mt-2 hidden sm:block">Perbandingan sesi</div>
+                </div>
+            </div>
+
+            <!-- Financial Report Box -->
+            <div class="bg-white rounded-2xl sm:rounded-3xl border border-brand-200 shadow-sm overflow-hidden">
+                <div class="p-4 sm:p-6 border-b border-brand-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <h3 class="font-serif text-lg sm:text-xl font-bold text-brand-900">Laporan Keuangan Bulanan</h3>
+                    <div class="relative w-full sm:w-auto">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400"><i class="fa-solid fa-search text-xs"></i></span>
+                        <input type="text" id="table-search" oninput="renderAdminTable()" placeholder="Cari nama klien..." class="bg-brand-50 border border-brand-200 rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900 w-full sm:w-64">
+                    </div>
+                </div>
+
+                <!-- DESKTOP: Tabel -->
+                <div class="hidden md:block scroll-x overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm min-w-[980px]">
+                        <thead>
+                            <tr class="bg-brand-100/70 text-brand-900 text-xs uppercase font-bold tracking-wider border-b border-brand-200">
+                                <th class="p-4">No</th>
+                                <th class="p-4">Nama Klien</th>
+                                <th class="p-4">Jadwal Sesi</th>
+                                <th class="p-4">Tanggal DP</th>
+                                <th class="p-4">Nominal DP</th>
+                                <th class="p-4">Tgl Pelunasan</th>
+                                <th class="p-4">Nom. Pelunasan</th>
+                                <th class="p-4">Metode</th>
+                                <th class="p-4">Total</th>
+                                <th class="p-4">Kategori</th>
+                                <th class="p-4 text-center">Status</th>
+                                <th class="p-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body" class="divide-y divide-brand-100">
+                            <tr>
+                                <td colspan="12" class="p-8 text-center text-gray-400 text-sm">
+                                    <i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data dari Google Sheets...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- MOBILE: Kartu -->
+                <div id="admin-card-body" class="md:hidden divide-y divide-brand-100">
+                    <div class="p-6 text-center text-gray-400 text-sm">
+                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal Tambah/Edit Transaksi -->
+    <div id="transaction-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-3 sm:p-4">
+        <div class="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-brand-100 pb-3 sm:pb-4">
+                <h3 id="modal-title" class="font-serif text-lg sm:text-xl font-bold text-brand-900">Tambah Transaksi Manual</h3>
+                <button onclick="closeAddTransactionModal()" class="text-gray-400 hover:text-brand-900 w-8 h-8 flex items-center justify-center rounded-full hover:bg-brand-100 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleSaveManualTransaction(event)" class="space-y-4">
+                <input type="hidden" id="edit-index" value="-1">
+                <div>
+                    <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Nama Klien</label>
+                    <input type="text" id="m-nama" required class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Tanggal Sesi</label>
+                    <input type="date" id="m-tgl-sesi" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Jam Mulai</label>
+                        <input type="time" id="m-jam-mulai" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Jam Selesai</label>
+                        <input type="time" id="m-jam-selesai" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Tanggal DP</label>
+                        <input type="date" id="m-tgl-dp" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Nominal DP (Rp)</label>
+                        <input type="number" id="m-nom-dp" value="0" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Tgl Pelunasan</label>
+                        <input type="date" id="m-tgl-lunas" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Nom. Pelunasan (Rp)</label>
+                        <input type="number" id="m-nom-lunas" value="0" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Metode Pembayaran</label>
+                        <select id="m-metode" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                            <option value="transfer">Transfer</option>
+                            <option value="cash">Cash / Offline</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Kategori</label>
+                        <select id="m-kategori" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                            <option value="non">Non-Komersil</option>
+                            <option value="kom">Komersil</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Total Nilai Transaksi (Rp)</label>
+                    <input type="number" id="m-total" value="0" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                </div>
+                <div class="pt-3 sm:pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
+                    <button type="button" onclick="closeAddTransactionModal()" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Batal</button>
+                    <button type="submit" id="btn-save-tx" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-brand-900 text-white hover:bg-brand-800 transition">Simpan Transaksi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-6 sm:right-6 bg-brand-900 text-white px-5 py-3 rounded-2xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 text-sm flex items-center space-x-3">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toast-message">Berhasil menyimpan data!</span>
+    </div>
+
+    <!-- ================= Auth Gate ================= -->
+    <div id="auth-gate" class="fixed inset-0 z-[60] bg-brand-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl sm:rounded-3xl border border-brand-200 shadow-xl p-6 sm:p-8 max-w-sm w-full space-y-5 text-center">
+            <div class="w-14 h-14 rounded-full bg-brand-900 flex items-center justify-center text-white font-serif text-2xl mx-auto">P</div>
+            <div>
+                <h2 class="font-serif text-xl font-bold text-brand-900">Area Admin</h2>
+                <p class="text-xs text-gray-500 mt-1">Masukkan kata sandi untuk melanjutkan</p>
+            </div>
+            <input type="password" id="gate-password" onkeydown="if(event.key==='Enter'){event.preventDefault();submitGate();}" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-3 text-sm text-center focus:outline-none focus:ring-2 focus:ring-brand-900" placeholder="••••••••">
+            <button onclick="submitGate()" class="w-full bg-brand-900 text-white rounded-xl py-3 font-semibold text-sm hover:bg-brand-800 transition">Masuk</button>
+            <p id="gate-error" class="text-xs text-red-500 hidden">Kata sandi salah.</p>
+            <a href="index.html" class="block text-xs text-gray-400 hover:text-brand-900"><i class="fa-solid fa-arrow-left mr-1"></i>Kembali ke halaman booking</a>
+        </div>
+    </div>
+
+    <script>
+        /* ============================================================
+           KONFIGURASI — URL WEB APP APPS SCRIPT
+           ============================================================ */
+        const API_URL = 'https://script.google.com/macros/s/AKfycbycfAIvR1W8u7OlzlpRwqin2y29I5dmrEh9Y8iSHyyKq4aBi7ji2TM8zMr13kphw0UNgQ/exec';
+
+        // Kosongkan ('') untuk menonaktifkan gerbang sandi.
+        const ADMIN_PASSWORD = 'potrethouse2026';
+
+        let transactions = [];
+        let isSaving = false;
+
+        /* ---------------- API Helper ---------------- */
+        async function apiGet(action) {
+            const res = await fetch(`${API_URL}?action=${encodeURIComponent(action)}`);
+            return res.json();
+        }
+        async function apiPost(payload) {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+            return res.json();
+        }
+
+        /* ---------------- Auth Gate ---------------- */
+        function submitGate() {
+            const val = document.getElementById('gate-password').value;
+            if (val === ADMIN_PASSWORD) {
+                sessionStorage.setItem('ph_admin_ok', '1');
+                hideGate();
+            } else {
+                document.getElementById('gate-error').classList.remove('hidden');
+            }
+        }
+        function hideGate() {
+            const gate = document.getElementById('auth-gate');
+            gate.classList.add('hidden');
+            gate.classList.remove('flex');
+            loadTransactions();
+        }
+
+        /* ---------------- Load Data ---------------- */
+        async function loadTransactions() {
+            const loadingRow = `<div class="p-6 text-center text-gray-400 text-sm">
+                <i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data dari Google Sheets...</div>`;
+            document.getElementById('admin-table-body').innerHTML =
+                `<tr><td colspan="12" class="p-8 text-center text-gray-400 text-sm">
+                    <i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data dari Google Sheets...</td></tr>`;
+            document.getElementById('admin-card-body').innerHTML = loadingRow;
+
+            try {
+                const res = await apiGet('list');
+                if (res.status === 'success') {
+                    transactions = res.data || [];
+                    renderAdminTable();
+                } else {
+                    const msg = `Gagal memuat: ${res.message || 'unknown error'}`;
+                    document.getElementById('admin-table-body').innerHTML = `<tr><td colspan="12" class="p-8 text-center text-red-500 text-sm">${msg}</td></tr>`;
+                    document.getElementById('admin-card-body').innerHTML = `<div class="p-6 text-center text-red-500 text-sm">${msg}</div>`;
+                }
+            } catch (err) {
+                console.error(err);
+                const msg = 'Gagal terhubung ke server. Periksa URL API & koneksi internet.';
+                document.getElementById('admin-table-body').innerHTML = `<tr><td colspan="12" class="p-8 text-center text-red-500 text-sm">${msg}</td></tr>`;
+                document.getElementById('admin-card-body').innerHTML = `<div class="p-6 text-center text-red-500 text-sm">${msg}</div>`;
+            }
+        }
+
+        /* ---------------- Helpers ---------------- */
+        function escapeHtml_(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function jadwalSesiText_(tx) {
+            const tgl = tx.tglSesi || '';
+            const jm = tx.jamMulai || '';
+            const js = tx.jamSelesai || '';
+            if (!tgl && !jm && !js) return '-';
+            const tglPart = tgl ? tgl : '';
+            const jamPart = (jm && js) ? `${jm}–${js}` : (jm || js || '');
+            return [tglPart, jamPart].filter(Boolean).join(' · ');
+        }
+
+        /* ---------------- Render Tabel & Statistik ---------------- */
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-table-body');
+            const cardBody = document.getElementById('admin-card-body');
+            const searchKeyword = document.getElementById('table-search').value.toLowerCase();
+            tbody.innerHTML = '';
+            cardBody.innerHTML = '';
+
+            let totalPendapatan = 0;
+            let totalPiutang = 0;
+            let countKom = 0;
+            let countNon = 0;
+
+            const filteredTx = transactions.filter(tx => (tx.nama || '').toLowerCase().includes(searchKeyword));
+
+            if (filteredTx.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-gray-400 text-sm">Belum ada data transaksi.</td></tr>`;
+                cardBody.innerHTML = `<div class="p-6 text-center text-gray-400 text-sm">Belum ada data transaksi.</div>`;
+            }
+
+            filteredTx.forEach((tx, index) => {
+                const totalMasuk = (Number(tx.nomDp) || 0) + (Number(tx.nomLunas) || 0);
+                const totalNilai = Number(tx.total) || 0;
+                const sisa = Math.max(0, totalNilai - totalMasuk);
+
+                totalPendapatan += totalMasuk;
+                totalPiutang += sisa;
+
+                if (tx.kategori === 'kom') countKom++; else countNon++;
+
+                let statusBadge = '';
+                if (totalMasuk > 0 && sisa === 0) {
+                    statusBadge = '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-semibold">Lunas</span>';
+                } else if (totalMasuk > 0) {
+                    statusBadge = '<span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">DP Saja</span>';
+                } else {
+                    statusBadge = '<span class="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">Belum Bayar</span>';
+                }
+
+                const jadwal = jadwalSesiText_(tx);
+
+                /* Desktop row */
+                const row = document.createElement('tr');
+                row.className = "hover:bg-brand-50/50 transition";
+                row.innerHTML = `
+                    <td class="p-4 font-medium text-gray-500">${index + 1}</td>
+                    <td class="p-4 font-bold text-brand-900">${escapeHtml_(tx.nama || '-')}</td>
+                    <td class="p-4 text-gray-700 whitespace-nowrap">
+                        <i class="fa-regular fa-clock mr-1 text-brand-800"></i>${escapeHtml_(jadwal)}
+                    </td>
+                    <td class="p-4 text-gray-600">${escapeHtml_(tx.tglDp || '-')}</td>
+                    <td class="p-4 text-gray-900">Rp ${(Number(tx.nomDp) || 0).toLocaleString('id-ID')}</td>
+                    <td class="p-4 text-gray-600">${escapeHtml_(tx.tglLunas || '-')}</td>
+                    <td class="p-4 text-gray-900">Rp ${(Number(tx.nomLunas) || 0).toLocaleString('id-ID')}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 bg-brand-100 text-brand-800 rounded text-xs font-medium uppercase">${escapeHtml_(tx.metode || '-')}</span></td>
+                    <td class="p-4 font-bold text-brand-900">Rp ${totalMasuk.toLocaleString('id-ID')}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 ${tx.kategori === 'kom' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-700'} rounded text-xs font-semibold">${tx.kategori === 'kom' ? 'Komersil' : 'Non-Komersil'}</span></td>
+                    <td class="p-4 text-center">${statusBadge}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="openEditModal(${tx.id})" class="w-8 h-8 rounded-lg bg-brand-100 text-brand-900 hover:bg-brand-900 hover:text-white transition items-center justify-center inline-flex" title="Edit Transaksi"><i class="fa-solid fa-pen text-xs"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+
+                /* Mobile card */
+                const card = document.createElement('div');
+                card.className = "p-4 space-y-3";
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="text-xs text-gray-500 font-medium">#${index + 1}</div>
+                            <div class="font-bold text-brand-900 text-base truncate">${escapeHtml_(tx.nama || '-')}</div>
+                        </div>
+                        <div class="shrink-0">${statusBadge}</div>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-700 bg-brand-50 border border-brand-200 rounded-lg px-3 py-2">
+                        <i class="fa-regular fa-clock text-brand-800"></i>
+                        <span class="font-medium">${escapeHtml_(jadwal)}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-brand-50 rounded-lg p-2.5 border border-brand-100">
+                            <div class="text-[10px] uppercase text-gray-500 font-semibold">DP</div>
+                            <div class="font-semibold text-brand-900 mt-0.5">Rp ${(Number(tx.nomDp) || 0).toLocaleString('id-ID')}</div>
+                            <div class="text-[10px] text-gray-500 mt-0.5">${escapeHtml_(tx.tglDp || '-')}</div>
+                        </div>
+                        <div class="bg-brand-50 rounded-lg p-2.5 border border-brand-100">
+                            <div class="text-[10px] uppercase text-gray-500 font-semibold">Pelunasan</div>
+                            <div class="font-semibold text-brand-900 mt-0.5">Rp ${(Number(tx.nomLunas) || 0).toLocaleString('id-ID')}</div>
+                            <div class="text-[10px] text-gray-500 mt-0.5">${escapeHtml_(tx.tglLunas || '-')}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 bg-brand-100 text-brand-800 rounded text-[10px] font-medium uppercase">${escapeHtml_(tx.metode || '-')}</span>
+                            <span class="px-2 py-0.5 ${tx.kategori === 'kom' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-700'} rounded text-[10px] font-semibold">${tx.kategori === 'kom' ? 'Komersil' : 'Non-Komersil'}</span>
+                        </div>
+                        <div class="font-bold text-brand-900 text-sm">Rp ${totalMasuk.toLocaleString('id-ID')}</div>
+                    </div>
+                    <button onclick="openEditModal(${tx.id})" class="w-full bg-brand-100 text-brand-900 hover:bg-brand-900 hover:text-white transition rounded-lg py-2 text-xs font-semibold flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-pen text-[10px]"></i> Edit Transaksi
+                    </button>
+                `;
+                cardBody.appendChild(card);
+            });
+
+            document.getElementById('stat-total-pendapatan').innerText = `Rp ${totalPendapatan.toLocaleString('id-ID')}`;
+            document.getElementById('stat-total-klien').innerText = `${transactions.length} Klien`;
+            document.getElementById('stat-total-piutang').innerText = `Rp ${totalPiutang.toLocaleString('id-ID')}`;
+            document.getElementById('stat-perbandingan-komersil').innerText = `${countKom} / ${countNon}`;
+        }
+
+        /* ---------------- Modal ---------------- */
+        function openAddTransactionModal() {
+            document.getElementById('modal-title').innerText = 'Tambah Transaksi Manual';
+            document.getElementById('edit-index').value = '-1';
+            document.getElementById('m-nama').value = '';
+            document.getElementById('m-tgl-sesi').value = '';
+            document.getElementById('m-jam-mulai').value = '';
+            document.getElementById('m-jam-selesai').value = '';
+            document.getElementById('m-tgl-dp').value = '';
+            document.getElementById('m-nom-dp').value = '0';
+            document.getElementById('m-tgl-lunas').value = '';
+            document.getElementById('m-nom-lunas').value = '0';
+            document.getElementById('m-metode').value = 'transfer';
+            document.getElementById('m-kategori').value = 'non';
+            document.getElementById('m-total').value = '0';
+            const m = document.getElementById('transaction-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function openEditModal(id) {
+            const tx = transactions.find(t => Number(t.id) === Number(id));
+            if (!tx) return;
+            document.getElementById('modal-title').innerText = `Edit Transaksi: ${tx.nama}`;
+            document.getElementById('edit-index').value = tx.id;
+            document.getElementById('m-nama').value = tx.nama || '';
+            document.getElementById('m-tgl-sesi').value = tx.tglSesi || '';
+            document.getElementById('m-jam-mulai').value = tx.jamMulai || '';
+            document.getElementById('m-jam-selesai').value = tx.jamSelesai || '';
+            document.getElementById('m-tgl-dp').value = tx.tglDp || '';
+            document.getElementById('m-nom-dp').value = tx.nomDp || 0;
+            document.getElementById('m-tgl-lunas').value = tx.tglLunas || '';
+            document.getElementById('m-nom-lunas').value = tx.nomLunas || 0;
+            document.getElementById('m-metode').value = tx.metode || 'transfer';
+            document.getElementById('m-kategori').value = tx.kategori || 'non';
+            document.getElementById('m-total').value = tx.total || 0;
+            const m = document.getElementById('transaction-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeAddTransactionModal() {
+            const m = document.getElementById('transaction-modal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        /* ---------------- Simpan Transaksi ---------------- */
+        async function handleSaveManualTransaction(e) {
+            e.preventDefault();
+            if (isSaving) return;
+            isSaving = true;
+
+            const btn = document.getElementById('btn-save-tx');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Menyimpan...';
+
+            const id = parseInt(document.getElementById('edit-index').value);
+            const data = {
+                nama:       document.getElementById('m-nama').value.trim(),
+                tglSesi:    document.getElementById('m-tgl-sesi').value,
+                jamMulai:   document.getElementById('m-jam-mulai').value,
+                jamSelesai: document.getElementById('m-jam-selesai').value,
+                tglDp:      document.getElementById('m-tgl-dp').value,
+                nomDp:      parseInt(document.getElementById('m-nom-dp').value) || 0,
+                tglLunas:   document.getElementById('m-tgl-lunas').value,
+                nomLunas:   parseInt(document.getElementById('m-nom-lunas').value) || 0,
+                metode:     document.getElementById('m-metode').value,
+                kategori:   document.getElementById('m-kategori').value,
+                total:      parseInt(document.getElementById('m-total').value) || 0
+            };
+
+            try {
+                let result;
+                if (id === -1) {
+                    result = await apiPost({ action: 'create', data });
+                } else {
+                    data.id = id;
+                    result = await apiPost({ action: 'update', data });
+                }
+
+                if (result.status === 'success') {
+                    showToast(id === -1 ? 'Transaksi baru berhasil ditambahkan!' : 'Data transaksi berhasil diperbarui!');
+                    closeAddTransactionModal();
+                    loadTransactions();
+                } else {
+                    showToast('Gagal: ' + (result.message || 'unknown error'));
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal terhubung ke server.');
+            } finally {
+                isSaving = false;
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            }
+        }
+
+        /* ---------------- Toast ---------------- */
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        /* ---------------- Init ---------------- */
+        window.addEventListener('DOMContentLoaded', function() {
+            if (!ADMIN_PASSWORD || sessionStorage.getItem('ph_admin_ok') === '1') {
+                hideGate();
+            }
+        });
+    </script>
+</body>
+</html>

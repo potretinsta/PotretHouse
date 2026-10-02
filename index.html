@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#2b2523">
+    <title>PotretHouse Studio — Katalog & Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fcfbfa', 100: '#f4f0ec', 200: '#e5dcda',
+                            300: '#d1c3be', 800: '#4a423e', 900: '#2b2523',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .tab-content { transition: all 0.3s ease-in-out; }
+        input[type="date"], input[type="time"] {
+            -webkit-appearance: none;
+            appearance: none;
+            min-height: 42px;
+        }
+        input[type="date"]::-webkit-date-and-time-value,
+        input[type="time"]::-webkit-date-and-time-value {
+            text-align: left;
+        }
+        @media (min-width: 1024px) {
+            .sticky-desktop { position: sticky; top: 7rem; }
+        }
+        body { overflow-x: hidden; }
+        .scroll-x { -webkit-overflow-scrolling: touch; }
+    </style>
+</head>
+<body class="bg-brand-50 text-brand-900 h-full flex flex-col antialiased">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-brand-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
+            <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-900 flex items-center justify-center text-white font-serif text-lg sm:text-xl tracking-wider shrink-0">P</div>
+                <div class="min-w-0">
+                    <h1 class="font-serif text-lg sm:text-2xl font-bold tracking-tight text-brand-900 truncate">PotretHouse</h1>
+                    <p class="text-[10px] sm:text-xs text-gray-500 uppercase tracking-widest truncate">Studio Booking</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+                <a href="https://wa.me/6281324192250" target="_blank" class="hidden sm:inline-flex items-center space-x-2 text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3.5 py-2 rounded-full hover:bg-emerald-100 transition">
+                    <i class="fa-brands fa-whatsapp text-sm text-emerald-600"></i>
+                    <span>0813-2419-2250</span>
+                </a>
+                <a href="https://wa.me/6281324192250" target="_blank" class="sm:hidden w-9 h-9 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                </a>
+                <a href="admin.html" title="Area Admin" class="w-9 h-9 rounded-full border border-brand-200 text-gray-400 hover:text-brand-900 hover:border-brand-900 flex items-center justify-center transition">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+
+        <div id="tab-client" class="tab-content space-y-6 sm:space-y-8">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-brand-900 to-brand-800 rounded-2xl sm:rounded-3xl p-6 sm:p-12 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute right-0 bottom-0 opacity-10 translate-x-10 translate-y-10 pointer-events-none">
+                    <i class="fa-solid fa-camera text-9xl"></i>
+                </div>
+                <div class="max-w-xl relative z-10">
+                    <span class="bg-white/10 text-brand-200 text-[10px] sm:text-xs uppercase px-3 py-1 rounded-full font-semibold tracking-wider inline-block">Professional Photography Studio</span>
+                    <h2 class="font-serif text-2xl sm:text-4xl font-bold mt-3 sm:mt-4 mb-2 sm:mb-3 leading-snug">Abadikan Momen Terbaikmu Bersama PotretHouse</h2>
+                    <p class="text-brand-200 text-xs sm:text-base leading-relaxed">Pilih paket studio, hitung estimasi biaya secara otomatis, dan lakukan booking secara instan dengan sistem terintegrasi kami.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+                <!-- Left: Rate Card & Calculator Menu -->
+                <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+                    <div class="flex items-center justify-between gap-3">
+                        <h3 class="font-serif text-lg sm:text-2xl font-bold text-brand-900">Pilih Paket & Kalkulator</h3>
+                        <span class="text-[10px] sm:text-xs text-gray-500 bg-white px-2.5 sm:px-3 py-1.5 rounded-full border border-brand-200 shadow-sm shrink-0">
+                            <i class="fa-solid fa-calculator mr-1.5 text-brand-800"></i>Real-Time
+                        </span>
+                    </div>
+
+                    <!-- Kategori Selector -->
+                    <div class="grid grid-cols-1 xs:grid-cols-3 sm:grid-cols-3 gap-2 sm:gap-3">
+                        <button onclick="setCategory('per-studio')" id="cat-per-studio" class="p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 text-left transition border-brand-900 bg-white shadow-sm">
+                            <div class="font-bold text-xs sm:text-sm text-brand-900">Per-Studio Only</div>
+                            <div class="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Mulai Rp 250K</div>
+                        </button>
+                        <button onclick="setCategory('studio-fotografer')" id="cat-studio-fotografer" class="p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 text-left transition border-brand-200 bg-white/60 hover:bg-white">
+                            <div class="font-bold text-xs sm:text-sm text-brand-900">Studio + Fotografer</div>
+                            <div class="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Mulai Rp 200K</div>
+                        </button>
+                        <button onclick="setCategory('all-akses')" id="cat-all-akses" class="p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 text-left transition border-brand-200 bg-white/60 hover:bg-white">
+                            <div class="font-bold text-xs sm:text-sm text-brand-900">All Akses + Fotografer</div>
+                            <div class="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1">Mulai Rp 300K</div>
+                        </button>
+                    </div>
+
+                    <!-- Options & Packages Card -->
+                    <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-brand-200 shadow-sm space-y-5 sm:space-y-6">
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">Tipe Sesi</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                                <label class="flex items-center p-3 rounded-xl border border-brand-200 cursor-pointer hover:bg-brand-50 transition">
+                                    <input type="radio" name="tipeSesi" value="non-komersil" checked onchange="calculatePrice()" class="text-brand-900 focus:ring-brand-900 shrink-0">
+                                    <span class="ml-2.5 text-xs sm:text-sm font-semibold">Non-Komersil (Personal/Graduation)</span>
+                                </label>
+                                <label class="flex items-center p-3 rounded-xl border border-brand-200 cursor-pointer hover:bg-brand-50 transition">
+                                    <input type="radio" name="tipeSesi" value="komersil" onchange="calculatePrice()" class="text-brand-900 focus:ring-brand-900 shrink-0">
+                                    <span class="ml-2.5 text-xs sm:text-sm font-semibold">Komersil (Brand/Produk)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">Pilih Durasi / Paket Waktu</label>
+                            <select id="select-durasi" onchange="calculatePrice()" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900 font-medium">
+                            </select>
+                        </div>
+
+                        <div class="border-t border-brand-100 pt-5 sm:pt-6 space-y-4">
+                            <h4 class="font-semibold text-sm text-brand-900">Add-ons & Tambahan Layanan</h4>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                <div class="flex items-center justify-between p-3 sm:p-3.5 bg-brand-50 rounded-xl border border-brand-200">
+                                    <div class="min-w-0 pr-2">
+                                        <div class="text-xs sm:text-sm font-semibold">Extra Orang</div>
+                                        <div class="text-[10px] sm:text-xs text-gray-500">Maks. 8 org standar (+30K/org)</div>
+                                    </div>
+                                    <div class="flex items-center space-x-2 shrink-0">
+                                        <button type="button" onclick="adjustCount('extraPerson', -1)" class="w-7 h-7 bg-white rounded-lg border border-brand-200 flex items-center justify-center font-bold text-sm active:bg-brand-100">-</button>
+                                        <span id="val-extraPerson" class="w-6 text-center font-bold text-sm">0</span>
+                                        <button type="button" onclick="adjustCount('extraPerson', 1)" class="w-7 h-7 bg-white rounded-lg border border-brand-200 flex items-center justify-center font-bold text-sm active:bg-brand-100">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between p-3 sm:p-3.5 bg-brand-50 rounded-xl border border-brand-200">
+                                    <div class="min-w-0 pr-2">
+                                        <div class="text-xs sm:text-sm font-semibold">Extra Editing Foto</div>
+                                        <div class="text-[10px] sm:text-xs text-gray-500">Touch up tambahan (+5K/foto)</div>
+                                    </div>
+                                    <div class="flex items-center space-x-2 shrink-0">
+                                        <button type="button" onclick="adjustCount('extraEdit', -1)" class="w-7 h-7 bg-white rounded-lg border border-brand-200 flex items-center justify-center font-bold text-sm active:bg-brand-100">-</button>
+                                        <span id="val-extraEdit" class="w-6 text-center font-bold text-sm">0</span>
+                                        <button type="button" onclick="adjustCount('extraEdit', 1)" class="w-7 h-7 bg-white rounded-lg border border-brand-200 flex items-center justify-center font-bold text-sm active:bg-brand-100">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Booking Form & Realtime Summary -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-brand-200 shadow-xl lg:sticky-desktop space-y-5 sm:space-y-6">
+                        <h3 class="font-serif text-lg sm:text-xl font-bold text-brand-900 border-b border-brand-100 pb-3 sm:pb-4">Ringkasan & Form Booking</h3>
+
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between gap-3 text-gray-600">
+                                <span id="label-paket-summary" class="min-w-0 truncate">Paket Studio</span>
+                                <span id="price-base" class="font-semibold text-brand-900 shrink-0">Rp 0</span>
+                            </div>
+                            <div id="row-addon-person" class="flex justify-between text-gray-600 hidden">
+                                <span>Extra Orang (<span id="count-person">0</span> org)</span>
+                                <span id="price-person" class="font-semibold text-brand-900">Rp 0</span>
+                            </div>
+                            <div id="row-addon-edit" class="flex justify-between text-gray-600 hidden">
+                                <span>Extra Edit (<span id="count-edit">0</span> foto)</span>
+                                <span id="price-edit" class="font-semibold text-brand-900">Rp 0</span>
+                            </div>
+                            <div id="row-durasi-info" class="flex justify-between text-gray-600 border-t border-dashed border-brand-200 pt-3 hidden">
+                                <span><i class="fa-regular fa-clock mr-1 text-brand-800"></i>Durasi Sesi</span>
+                                <span id="info-durasi" class="font-semibold text-brand-900">-</span>
+                            </div>
+                            <div class="border-t border-brand-200 pt-3 flex justify-between items-center">
+                                <span class="font-bold text-brand-900 text-sm sm:text-base">Total Biaya</span>
+                                <span id="price-total" class="font-bold text-xl sm:text-2xl text-brand-900">Rp 0</span>
+                            </div>
+                        </div>
+
+                        <!-- Form Booking Input -->
+                        <form id="booking-form" onsubmit="handleBookingSubmit(event)" class="space-y-4 pt-2">
+                            <div>
+                                <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Nama Lengkap / Klien</label>
+                                <input type="text" id="booking-nama" required placeholder="cth: Sinta Maharani" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Tanggal Sesi</label>
+                                <input type="date" id="booking-tgl" required class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Jam Mulai</label>
+                                    <input type="time" id="booking-jam-mulai" required oninput="updateEndTime()" onchange="updateEndTime()" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5 flex items-center gap-1">
+                                        Jam Selesai <span class="text-emerald-600 font-normal lowercase normal-case"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                                    </label>
+                                    <input type="time" id="booking-jam-selesai" readonly tabindex="-1" class="w-full bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-emerald-800 cursor-not-allowed">
+                                </div>
+                            </div>
+                            <p id="info-waktu" class="text-[10px] sm:text-xs text-gray-500 -mt-1 hidden">
+                                <i class="fa-solid fa-circle-info mr-1"></i><span id="info-waktu-text"></span>
+                            </p>
+
+                            <div>
+                                <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Metode Pembayaran</label>
+                                <select id="booking-metode" onchange="togglePaymentField()" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900 font-medium">
+                                    <option value="transfer">Transfer Bank (Booking + DP)</option>
+                                    <option value="cash">Bayar di Tempat (Offline / Cash)</option>
+                                </select>
+                            </div>
+
+                            <div id="container-dp">
+                                <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">Nominal DP (Transfer)</label>
+                                <input type="number" id="booking-dp" placeholder="cth: 100000" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-900">
+                            </div>
+
+                            <button type="submit" id="btn-submit-booking" class="w-full bg-brand-900 text-white rounded-xl py-3.5 font-semibold text-sm hover:bg-brand-800 transition shadow-lg flex items-center justify-center space-x-2 disabled:opacity-60 active:scale-[0.99]">
+                                <i class="fa-brands fa-whatsapp text-base"></i>
+                                <span>Booking & Kirim ke WhatsApp</span>
+                            </button>
+                            <p class="text-[10px] text-center text-gray-400 -mt-1">Data akan disimpan ke sistem & WhatsApp Anda akan terbuka untuk konfirmasi pembayaran.</p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-6 sm:right-6 bg-brand-900 text-white px-5 py-3 rounded-2xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 text-sm flex items-center space-x-3">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toast-message">Berhasil menyimpan data!</span>
+    </div>
+
+    <script>
+        /* ============================================================
+           KONFIGURASI
+           ============================================================ */
+        const API_URL = 'https://script.google.com/macros/s/AKfycbycfAIvR1W8u7OlzlpRwqin2y29I5dmrEh9Y8iSHyyKq4aBi7ji2TM8zMr13kphw0UNgQ/exec';
+
+        // Nomor WhatsApp studio (format internasional tanpa +/spasi)
+        const STUDIO_WA_NUMBER = '6285188468885';
+
+        /* ---------------- Rate Card ---------------- */
+        const rateCard = {
+            'per-studio': {
+                name: 'Per-Studio Only',
+                options: [
+                    { label: '1 Jam', hours: 1, price: 250000 },
+                    { label: '3 Jam', hours: 3, price: 700000 },
+                    { label: '6 Jam', hours: 6, price: 1300000 },
+                    { label: '8 Jam', hours: 8, price: 1700000 }
+                ]
+            },
+            'studio-fotografer': {
+                name: 'Rates Per-Studio + Fotografer',
+                options: [
+                    { label: '1 Jam', hours: 1, price: 200000 },
+                    { label: '2 Jam', hours: 2, price: 350000 },
+                    { label: '3 Jam', hours: 3, price: 500000 }
+                ]
+            },
+            'all-akses': {
+                name: 'Rates All Akses Studio + Fotografer',
+                options: [
+                    { label: '1 Jam', hours: 1, price: 300000 },
+                    { label: '2 Jam', hours: 2, price: 500000 },
+                    { label: '3 Jam', hours: 3, price: 700000 }
+                ]
+            }
+        };
+
+        let currentCategory = 'per-studio';
+        let addOnsCount = { extraPerson: 0, extraEdit: 0 };
+        let currentCalculatedTotal = 0;
+        let isSubmitting = false;
+
+        /* ---------------- API Helper ---------------- */
+        async function apiPost(payload) {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+            return res.json();
+        }
+
+        /* ---------------- Kategori ---------------- */
+        function setCategory(cat) {
+            currentCategory = cat;
+            ['per-studio', 'studio-fotografer', 'all-akses'].forEach(c => {
+                const btn = document.getElementById(`cat-${c}`);
+                if (c === cat) {
+                    btn.className = "p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 text-left transition border-brand-900 bg-white shadow-sm";
+                } else {
+                    btn.className = "p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 text-left transition border-brand-200 bg-white/60 hover:bg-white";
+                }
+            });
+
+            const selectDurasi = document.getElementById('select-durasi');
+            selectDurasi.innerHTML = '';
+            rateCard[cat].options.forEach((opt, idx) => {
+                const optEl = document.createElement('option');
+                optEl.value = idx;
+                optEl.text = `${opt.label} - Rp ${opt.price.toLocaleString('id-ID')}`;
+                selectDurasi.appendChild(optEl);
+            });
+
+            calculatePrice();
+        }
+
+        /* ---------------- Counter Add-on ---------------- */
+        function adjustCount(type, delta) {
+            addOnsCount[type] = Math.max(0, addOnsCount[type] + delta);
+            document.getElementById(`val-${type}`).innerText = addOnsCount[type];
+            calculatePrice();
+        }
+
+        /* ---------------- Helper: Hitung Jam Selesai ---------------- */
+        function formatTime_(totalMin) {
+            const h = Math.floor(totalMin / 60) % 24;
+            const m = totalMin % 60;
+            return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+        }
+
+        function updateEndTime() {
+            const startVal = document.getElementById('booking-jam-mulai').value;
+            const endField = document.getElementById('booking-jam-selesai');
+            const infoBox = document.getElementById('info-waktu');
+            const infoText = document.getElementById('info-waktu-text');
+            const durasiIdx = document.getElementById('select-durasi').value;
+
+            if (!startVal || !rateCard[currentCategory] || !rateCard[currentCategory].options[durasiIdx]) {
+                endField.value = '';
+                infoBox.classList.add('hidden');
+                return;
+            }
+
+            const hours = rateCard[currentCategory].options[durasiIdx].hours;
+            const [h, m] = startVal.split(':').map(Number);
+            const startMin = h * 60 + m;
+            const endMin = startMin + hours * 60;
+
+            endField.value = formatTime_(endMin);
+
+            const lintasHari = endMin >= 1440;
+            infoBox.classList.remove('hidden');
+            infoText.innerText = `Sesi berdurasi ${hours} jam${lintasHari ? ' (melewati tengah malam / hari berikutnya)' : ''}.`;
+        }
+
+        /* ---------------- Kalkulasi Harga ---------------- */
+        function calculatePrice() {
+            const selectedIdx = document.getElementById('select-durasi').value;
+            const packageData = rateCard[currentCategory].options[selectedIdx];
+
+            const basePrice = packageData.price;
+            const pricePerson = addOnsCount.extraPerson * 30000;
+            const priceEdit = addOnsCount.extraEdit * 5000;
+
+            currentCalculatedTotal = basePrice + pricePerson + priceEdit;
+
+            document.getElementById('label-paket-summary').innerText = `${rateCard[currentCategory].name} (${packageData.label})`;
+            document.getElementById('price-base').innerText = `Rp ${basePrice.toLocaleString('id-ID')}`;
+
+            if (addOnsCount.extraPerson > 0) {
+                document.getElementById('row-addon-person').classList.remove('hidden');
+                document.getElementById('count-person').innerText = addOnsCount.extraPerson;
+                document.getElementById('price-person').innerText = `Rp ${pricePerson.toLocaleString('id-ID')}`;
+            } else {
+                document.getElementById('row-addon-person').classList.add('hidden');
+            }
+
+            if (addOnsCount.extraEdit > 0) {
+                document.getElementById('row-addon-edit').classList.remove('hidden');
+                document.getElementById('count-edit').innerText = addOnsCount.extraEdit;
+                document.getElementById('price-edit').innerText = `Rp ${priceEdit.toLocaleString('id-ID')}`;
+            } else {
+                document.getElementById('row-addon-edit').classList.add('hidden');
+            }
+
+            document.getElementById('info-durasi').innerText = packageData.label;
+            document.getElementById('row-durasi-info').classList.remove('hidden');
+
+            document.getElementById('price-total').innerText = `Rp ${currentCalculatedTotal.toLocaleString('id-ID')}`;
+
+            updateEndTime();
+        }
+
+        function togglePaymentField() {
+            const metode = document.getElementById('booking-metode').value;
+            const dpContainer = document.getElementById('container-dp');
+            if (metode === 'cash') {
+                dpContainer.classList.add('hidden');
+            } else {
+                dpContainer.classList.remove('hidden');
+            }
+        }
+
+        /* ---------------- Format Pesan WhatsApp ---------------- */
+        function formatTanggalIndo_(isoDate) {
+            if (!isoDate) return '-';
+            const bulan = ['Januari','Februari','Maret','April','Mei','Juni',
+                           'Juli','Agustus','September','Oktober','November','Desember'];
+            const [y, m, d] = isoDate.split('-').map(Number);
+            if (!y || !m || !d) return isoDate;
+            return `${d} ${bulan[m-1]} ${y}`;
+        }
+
+        function buildWhatsAppMessage_(data) {
+            const lines = [];
+            lines.push('Halo *PotretHouse Studio* 👋');
+            lines.push('Saya ingin melakukan booking dengan detail berikut:');
+            lines.push('');
+            lines.push('*— DATA BOOKING —*');
+            lines.push(`👤 Nama       : ${data.nama}`);
+            lines.push(`📅 Tanggal    : ${formatTanggalIndo_(data.tglSesi)}`);
+            lines.push(`⏰ Jam        : ${data.jamMulai} - ${data.jamSelesai}`);
+            lines.push(`📸 Paket      : ${data.paket}`);
+            lines.push(`🏷️ Tipe Sesi  : ${data.kategori === 'kom' ? 'Komersil' : 'Non-Komersil'}`);
+            if (data.extraOrang > 0) lines.push(`👥 Extra Orang: ${data.extraOrang} orang`);
+            if (data.extraEdit > 0) lines.push(`✨ Extra Edit : ${data.extraEdit} foto`);
+            lines.push('');
+            lines.push('*— PEMBAYARAN —*');
+            lines.push(`💰 Total      : Rp ${data.total.toLocaleString('id-ID')}`);
+            lines.push(`💳 Metode     : ${data.metode === 'transfer' ? 'Transfer Bank' : 'Bayar di Tempat (Cash)'}`);
+            if (data.metode === 'transfer') {
+                if (data.nomDp > 0) {
+                    lines.push(`💵 DP         : Rp ${data.nomDp.toLocaleString('id-ID')}`);
+                    lines.push(`📌 Sisa Bayar : Rp ${Math.max(0, data.total - data.nomDp).toLocaleString('id-ID')}`);
+                } else {
+                    lines.push('💵 DP         : (belum diisi)');
+                }
+            }
+            lines.push('');
+            if (data.metode === 'transfer') {
+                lines.push('Mohon informasi *nomor rekening* untuk pembayaran DP ya. Terima kasih 🙏');
+            } else {
+                lines.push('Saya akan melakukan pembayaran di tempat pada hari H. Terima kasih 🙏');
+            }
+            return lines.join('\n');
+        }
+
+        function openWhatsApp_(message) {
+            const url = `https://wa.me/${STUDIO_WA_NUMBER}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        /* ---------------- Submit Booking → Sheets + WhatsApp ---------------- */
+        async function handleBookingSubmit(e) {
+            e.preventDefault();
+            if (isSubmitting) return;
+            isSubmitting = true;
+
+            const btn = document.getElementById('btn-submit-booking');
+            const originalBtnHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Memproses...</span>';
+
+            const nama = document.getElementById('booking-nama').value.trim();
+            const tgl = document.getElementById('booking-tgl').value;
+            const jamMulai = document.getElementById('booking-jam-mulai').value;
+            const jamSelesai = document.getElementById('booking-jam-selesai').value;
+            const metode = document.getElementById('booking-metode').value;
+            const nomDp = metode === 'transfer'
+                ? (parseInt(document.getElementById('booking-dp').value) || 0)
+                : 0;
+            const isKomersil = document.querySelector('input[name="tipeSesi"]:checked').value === 'komersil' ? 'kom' : 'non';
+
+            if (!jamSelesai) {
+                showToast('Jam selesai tidak terhitung. Pastikan durasi & jam mulai sudah dipilih.');
+                isSubmitting = false;
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHTML;
+                return;
+            }
+
+            const selectedIdx = document.getElementById('select-durasi').value;
+            const paketLabel = `${rateCard[currentCategory].name} - ${rateCard[currentCategory].options[selectedIdx].label}`;
+
+            const dataToSave = {
+                nama: nama,
+                tglDp: metode === 'transfer' ? tgl : '',
+                nomDp: nomDp,
+                tglLunas: '',
+                nomLunas: 0,
+                metode: metode,
+                kategori: isKomersil,
+                paket: paketLabel,
+                tglSesi: tgl,
+                jamMulai: jamMulai,
+                jamSelesai: jamSelesai,
+                extraOrang: addOnsCount.extraPerson,
+                extraEdit: addOnsCount.extraEdit,
+                total: currentCalculatedTotal
+            };
+
+            const waMessage = buildWhatsAppMessage_(dataToSave);
+
+            try {
+                const result = await apiPost({ action: 'create', data: dataToSave });
+
+                if (result.status === 'success') {
+                    showToast('Booking tersimpan! Membuka WhatsApp...');
+
+                    // Reset form dulu
+                    e.target.reset();
+                    addOnsCount.extraPerson = 0;
+                    addOnsCount.extraEdit = 0;
+                    document.getElementById('val-extraPerson').innerText = '0';
+                    document.getElementById('val-extraEdit').innerText = '0';
+                    document.getElementById('booking-tgl').value = new Date().toISOString().split('T')[0];
+                    togglePaymentField();
+                    calculatePrice();
+
+                    // Delay singkat agar toast terlihat, lalu buka WhatsApp
+                    setTimeout(() => openWhatsApp_(waMessage), 700);
+                } else {
+                    // Kalau gagal simpan, tetap tawarkan buka WA
+                    showToast('Gagal simpan ke sistem: ' + (result.message || 'kesalahan'));
+                    if (confirm('Data gagal tersimpan ke sistem. Tetap kirim pesanan via WhatsApp?')) {
+                        openWhatsApp_(waMessage);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal terhubung ke server.');
+                if (confirm('Koneksi bermasalah. Tetap kirim pesanan via WhatsApp?')) {
+                    openWhatsApp_(waMessage);
+                }
+            } finally {
+                isSubmitting = false;
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHTML;
+            }
+        }
+
+        /* ---------------- Toast ---------------- */
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        /* ---------------- Init ---------------- */
+        window.onload = function() {
+            setCategory('per-studio');
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('booking-tgl').value = today;
+            togglePaymentField();
+        };
+    </script>
+</body>
+</html>
